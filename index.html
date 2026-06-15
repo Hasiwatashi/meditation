@@ -115,13 +115,13 @@ HTML
             font-size: 14px;
             margin-right: 10px;
         }
-        .settings input {
-            width: 60px;
-            padding: 5px;
+        .settings select {
+            padding: 6px 15px;
             font-size: 16px;
             border-radius: 5px;
             border: 1px solid #ccc;
-            text-align: center;
+            background-color: white;
+            cursor: pointer;
         }
         .total-info {
             font-size: 12px;
@@ -181,15 +181,22 @@ HTML
     </div>
 
     <div class="settings">
-        <label id="label-time" for="time-input">各瞑想の時間 (分):</label>
-        <input type="number" id="time-input" value="15" min="1" max="120" onchange="updateTimerDisplay()">
-        <div id="total-info" class="total-info">※歩く瞑想 → 座る瞑想の順に、合計30分行います。</div>
+        <label id="label-time" for="time-select">各瞑想の時間:</label>
+        <select id="time-select" onchange="updateTimerDisplay()">
+            <option value="10">10分</option>
+            <option value="20">20分</option>
+            <option value="30">30分</option>
+            <option value="40">40分</option>
+            <option value="50">50分</option>
+            <option value="60">60分</option>
+        </select>
+        <div id="total-info" class="total-info">※歩く瞑想 → 座る瞑想の順に連続で行います。</div>
     </div>
 
     <div>
         <span id="mode-badge" class="current-mode-badge" style="display:none;">歩く瞑想</span>
     </div>
-    <div id="timer" class="timer-display">15:00</div>
+    <div id="timer" class="timer-display">10:00</div>
 
     <div class="controls">
         <button id="start-btn" class="main-btn" onclick="toggleTimer()">瞑想開始</button>
@@ -203,12 +210,12 @@ HTML
         ja: {
             title: "瞑想ガイド",
             subtitle: "アジャン・トーン師の教えとともに",
-            labelTime: "各瞑想の時間 (分):",
+            labelTime: "各瞑想の時間:",
             totalInfo: "※歩く瞑想 → 座る瞑想の順に、連続で合計 {t} 分行います。",
             start: "瞑想開始",
             pause: "一時停止",
             ready: "準備ができたら「瞑想開始」を押してください。まずは歩く瞑想（半眼）から始まります。",
-            finish: "すべての瞑想が終了しました。サードゥ、サードゥ、サードゥ。",
+            finish: "すべての瞑想が終了しました。サードゥ、サードゥ、サードゥ。ここでワンセット終了です。次の瞑想を始める前に、15分から20分ほどの休憩を入れ、心と身体をゆったりと休ませてあげてください。",
             modeWalking: "経行（歩く瞑想・半眼）",
             modeInterval: "座る瞑想への準備（30秒）",
             modeSitting: "坐禅（座る瞑想・目を閉じる）",
@@ -219,7 +226,7 @@ HTML
                     1: "歩く瞑想を始めます。目は半眼にし、足を上げ、下ろす時はかかとからではなく、足の裏全体を床にそっと着けるように下ろします。右足、左足、一歩ずつの感覚に静かに気づいていきましょう。",
                     2: "歩く瞑想を始めます。目は半眼です。足を動かす前の意図に気づき、下ろす時は足の裏全体を均等に着けるようにして、一歩ずつの細かな感覚の変化に意識を向けます。",
                     3: "歩く瞑想を始めます。足の「上げる」「運ぶ」「下ろす」動きを丁寧に観察します。下ろす時は、かかとからではなく足の裏全体を着地させ、同じように足の裏全体を地面から離すように上げていきます。",
-                    4: "歩く瞑想を始めます。半眼のまま、足の裏全体で地面を捉える感覚、精度を高めて離れる感覚に伴う、すべての生滅の変化に気づきを維持します。",
+                    4: "歩く瞑想を始めます。半眼のまま、足の裏全体で地面を捉える感覚、そして離れる感覚に伴う、すべての生滅の変化に気づきを維持します。",
                     5: "歩く瞑想を始めます。足の裏全体が着く、離れる、その一歩一歩の純粋な感覚のなかに、深い集中とともに気づきを維持します。",
                     6: "歩く瞑想を始めます。足の裏全体がフラットに地面に触れる感覚と、それを知っている心の結びつきをただ静かに見つめます。"
                 },
@@ -237,12 +244,12 @@ HTML
         en: {
             title: "Meditation Guide",
             subtitle: "With the teachings of Ajahn Tong",
-            labelTime: "Duration per session (min):",
+            labelTime: "Duration per session:",
             totalInfo: "*Walking then Sitting session, total {t} mins consecutively.",
             start: "Start Meditation",
             pause: "Pause",
             ready: "Press 'Start' when ready. We will begin with walking meditation (eyes half-open).",
-            finish: "All meditation sessions are finished. Sadhu, Sadhu, Sadhu.",
+            finish: "All meditation sessions are finished. Sadhu, Sadhu, Sadhu. This completes one full set. Before starting your next session, please take a 15 to 20-minute break to let your mind and body rest completely.",
             modeWalking: "Walking Meditation (Eyes Half-Open)",
             modeInterval: "Preparing for Sitting (30s)",
             modeSitting: "Sitting Meditation (Eyes Closed)",
@@ -273,8 +280,8 @@ HTML
     let currentLang = 'ja';
     let currentStep = 1;
     let timerId = null;
-    let baseMinutes = 15; 
-    let timeLeft = 15 * 60;
+    let baseMinutes = 10; 
+    let timeLeft = 10 * 60;
     let isRunning = false;
     let currentMode = 'walking'; 
 
@@ -314,6 +321,12 @@ HTML
         
         const startBtn = document.getElementById('start-btn');
         startBtn.innerText = isRunning ? i18n[lang].pause : i18n[lang].start;
+
+        const selectEl = document.getElementById('time-select');
+        for (let i = 0; i < selectEl.options.length; i++) {
+            const val = selectEl.options[i].value;
+            selectEl.options[i].text = lang === 'ja' ? `${val}分` : `${val} min`;
+        }
 
         const stepButtons = document.querySelectorAll('.step-btn');
         stepButtons.forEach((btn, index) => {
@@ -359,7 +372,7 @@ HTML
     }
 
     function updateTimerDisplay() {
-        baseMinutes = parseInt(document.getElementById('time-input').value) || 15;
+        baseMinutes = parseInt(document.getElementById('time-select').value) || 10;
         document.getElementById('total-info').innerText = i18n[currentLang].totalInfo.replace('{t}', baseMinutes * 2);
         if (!isRunning) {
             timeLeft = baseMinutes * 60;
@@ -407,7 +420,7 @@ HTML
                     if (currentMode === 'walking') {
                         playChime();
                         currentMode = 'interval';
-                        timeLeft = 30; // 10秒から30秒の準備時間へ変更
+                        timeLeft = 30; 
                         formatTimer(timeLeft);
                         updateGuideText();
                         speakText(i18n[currentLang].changeToSitting);
