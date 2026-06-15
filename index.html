@@ -174,7 +174,6 @@ HTML
 </div>
 
 <script>
-    // 言語データ
     const i18n = {
         ja: {
             title: "瞑想ガイド",
@@ -186,12 +185,12 @@ HTML
             finish: "瞑想が終了しました。サードゥ、サードゥ、サードゥ。",
             steps: ["第1段階", "第2段階", "第3段階", "第4段階", "第5段階", "第6段階"],
             guides: {
-                1: "第1段階：呼吸に意識を向けます。「膨らみ」「縮み」に気づいていきましょう。",
+                1: "第1段階：呼吸に意識を向けます。お腹の膨らみ、縮みに気づいていきましょう。",
                 2: "第2段階：手の動きへの気づきを高めます。一つ一つの動作を丁寧に追います。",
-                3: "第3段階：歩行瞑想（経行）を始めます。足の上げ下げに集中します。",
+                3: "第3段階：歩行瞑想を始めます。足の上げ下げ、運びに集中します。",
                 4: "第4段階：身体の感覚、心の動き、すべての生滅をただ観察します。",
-                5: "第5段階：深い集中（サマーディ）とともに、純粋な気づきを維持します。",
-                6: "第6段階：内なる静寂と智慧（パンニャー）の広がりに身をゆだねます。"
+                5: "第5段階：深い集中とともに、純粋な気づきを維持します。",
+                6: "第6段階：内なる静寂と智慧の広がりに身をゆだねます。"
             }
         },
         en: {
@@ -208,8 +207,8 @@ HTML
                 2: "Step 2: Increase awareness of hand movements. Notice each motion gently.",
                 3: "Step 3: Begin walking meditation. Focus on the lifting and placing of your feet.",
                 4: "Step 4: Observe bodily sensations and mental states as they arise and pass away.",
-                5: "Step 5: Maintain pure awareness with deep concentration (Samadhi).",
-                6: "Step 6: Rest in inner silence and the expansion of wisdom (Pannya)."
+                5: "Step 5: Maintain pure awareness with deep concentration.",
+                6: "Step 6: Rest in inner silence and the expansion of wisdom."
             }
         }
     };
@@ -217,62 +216,65 @@ HTML
     let currentLang = 'ja';
     let currentStep = 1;
     let timerId = null;
-    let timeLeft = 15 * 60; // 秒換算
+    let timeLeft = 15 * 60;
     let isRunning = false;
 
-    // 言語切り替え
+    // 【新機能】音声を再生する関数
+    function speakText(text) {
+        // もし前に喋っている途中なら止める
+        window.speechSynthesis.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = currentLang === 'ja' ? 'ja-JP' : 'en-US';
+        utterance.rate = 0.85; // 瞑想用に少しゆっくり喋る設定
+        utterance.pitch = 1.0;
+        
+        window.speechSynthesis.speak(utterance);
+    }
+
     function changeLanguage(lang) {
         currentLang = lang;
-        
-        // ボタンの見た目更新
         document.getElementById('btn-ja').classList.toggle('active', lang === 'ja');
         document.getElementById('btn-en').classList.toggle('active', lang === 'en');
-        
-        // テキストの更新
         document.getElementById('app-title').innerText = i18n[lang].title;
         document.getElementById('app-subtitle').innerText = i18n[lang].subtitle;
         document.getElementById('label-time').innerText = i18n[lang].labelTime;
         
         const startBtn = document.getElementById('start-btn');
-        if (isRunning) {
-            startBtn.innerText = i18n[lang].pause;
-        } else {
-            startBtn.innerText = i18n[lang].start;
-        }
+        startBtn.innerText = isRunning ? i18n[lang].pause : i18n[lang].start;
 
-        // 段階ボタンのテキスト更新
         const stepButtons = document.querySelectorAll('.step-btn');
         stepButtons.forEach((btn, index) => {
             btn.innerText = i18n[lang].steps[index];
         });
 
-        // ガイドテキストの更新
         updateGuideText();
     }
 
-    // 段階の選択
     function selectStep(step) {
         currentStep = step;
-        
-        // ボタンの見た目更新
         const stepButtons = document.querySelectorAll('.step-btn');
         stepButtons.forEach((btn, index) => {
             btn.classList.toggle('active', (index + 1) === step);
         });
 
         updateGuideText();
-    }
-
-    // ガイドテキストの表示更新
-    function updateGuideText() {
+        
+        // 瞑想中に段階を切り替えたら新しいガイドを喋る
         if (isRunning) {
-            document.getElementById('guide').innerText = i18n[currentLang].guides[currentStep];
-        } else {
-            document.getElementById('guide').innerText = i18n[currentLang].ready;
+            speakText(i18n[currentLang].guides[currentStep]);
         }
     }
 
-    // タイマー時間の表示更新（入力欄が変わったとき）
+    function updateGuideText() {
+        const guideEl = document.getElementById('guide');
+        if (isRunning) {
+            guideEl.innerText = i18n[currentLang].guides[currentStep];
+        } else {
+            guideEl.innerText = i18n[currentLang].ready;
+        }
+    }
+
     function updateTimerDisplay() {
         if (isRunning) return;
         const mins = parseInt(document.getElementById('time-input').value) || 15;
@@ -280,7 +282,6 @@ HTML
         formatTimer(timeLeft);
     }
 
-    // タイマーの書式設定 (00:00)
     function formatTimer(seconds) {
         const m = Math.floor(seconds / 60);
         const s = seconds % 60;
@@ -288,7 +289,6 @@ HTML
             `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
 
-    // タイマーの開始・停止
     function toggleTimer() {
         const startBtn = document.getElementById('start-btn');
         
@@ -297,12 +297,16 @@ HTML
             clearInterval(timerId);
             isRunning = false;
             startBtn.innerText = i18n[currentLang].start;
+            window.speechSynthesis.cancel(); // 音声も止める
         } else {
             // 開始
             if (timeLeft <= 0) updateTimerDisplay();
             isRunning = true;
             startBtn.innerText = i18n[currentLang].pause;
             updateGuideText();
+
+            // 開始した瞬間に、現在の段階のガイドを喋る
+            speakText(i18n[currentLang].guides[currentStep]);
 
             timerId = setInterval(() => {
                 timeLeft--;
@@ -314,14 +318,13 @@ HTML
                     startBtn.innerText = i18n[currentLang].start;
                     document.getElementById('guide').innerText = i18n[currentLang].finish;
                     
-                    // ブラウザの標準アラート音（または音声再生の代わりに簡易通知）
-                    alert(i18n[currentLang].finish);
+                    // 終了した時に「サードゥ…」と喋る
+                    speakText(i18n[currentLang].finish);
                 }
             }, 1000);
         }
     }
 
-    // 初期化
     updateTimerDisplay();
 </script>
 
