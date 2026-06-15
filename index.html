@@ -210,7 +210,7 @@ HTML
             ready: "準備ができたら「瞑想開始」を押してください。まずは歩く瞑想（半眼）から始まります。",
             finish: "すべての瞑想が終了しました。サードゥ、サードゥ、サードゥ。",
             modeWalking: "経行（歩く瞑想・半眼）",
-            modeInterval: "座る瞑想への準備（10秒）",
+            modeInterval: "座る瞑想への準備（30秒）",
             modeSitting: "坐禅（座る瞑想・目を閉じる）",
             changeToSitting: "続いて、座る瞑想に移ります。静かに腰を下ろし、背筋を伸ばして、目を閉じましょう。お腹の動きに意識を向けます。",
             steps: ["第1段階", "第2段階", "第3段階", "第4段階", "第5段階", "第6段階"],
@@ -219,7 +219,7 @@ HTML
                     1: "歩く瞑想を始めます。目は半眼にし、足を上げ、下ろす時はかかとからではなく、足の裏全体を床にそっと着けるように下ろします。右足、左足、一歩ずつの感覚に静かに気づいていきましょう。",
                     2: "歩く瞑想を始めます。目は半眼です。足を動かす前の意図に気づき、下ろす時は足の裏全体を均等に着けるようにして、一歩ずつの細かな感覚の変化に意識を向けます。",
                     3: "歩く瞑想を始めます。足の「上げる」「運ぶ」「下ろす」動きを丁寧に観察します。下ろす時は、かかとからではなく足の裏全体を着地させ、同じように足の裏全体を地面から離すように上げていきます。",
-                    4: "歩く瞑想を始めます。半眼のまま、足の裏全体で地面を捉える感覚、そして離れる感覚に伴う、すべての生滅の変化に気づきを維持します。",
+                    4: "歩く瞑想を始めます。半眼のまま、足の裏全体で地面を捉える感覚、精度を高めて離れる感覚に伴う、すべての生滅の変化に気づきを維持します。",
                     5: "歩く瞑想を始めます。足の裏全体が着く、離れる、その一歩一歩の純粋な感覚のなかに、深い集中とともに気づきを維持します。",
                     6: "歩く瞑想を始めます。足の裏全体がフラットに地面に触れる感覚と、それを知っている心の結びつきをただ静かに見つめます。"
                 },
@@ -244,7 +244,7 @@ HTML
             ready: "Press 'Start' when ready. We will begin with walking meditation (eyes half-open).",
             finish: "All meditation sessions are finished. Sadhu, Sadhu, Sadhu.",
             modeWalking: "Walking Meditation (Eyes Half-Open)",
-            modeInterval: "Preparing for Sitting (10s)",
+            modeInterval: "Preparing for Sitting (30s)",
             modeSitting: "Sitting Meditation (Eyes Closed)",
             changeToSitting: "Now, please transition to sitting meditation. Quietly sit down, straighten your back, close your eyes, and focus on the movement of your abdomen.",
             steps: ["Step 1", "Step 2", "Step 3", "Step 4", "Step 5", "Step 6"],
@@ -407,7 +407,7 @@ HTML
                     if (currentMode === 'walking') {
                         playChime();
                         currentMode = 'interval';
-                        timeLeft = 10; 
+                        timeLeft = 30; // 10秒から30秒の準備時間へ変更
                         formatTimer(timeLeft);
                         updateGuideText();
                         speakText(i18n[currentLang].changeToSitting);
