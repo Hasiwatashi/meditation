@@ -216,12 +216,12 @@ HTML
             steps: ["第1段階", "第2段階", "第3段階", "第4段階", "第5段階", "第6段階"],
             startGuides: {
                 walking: {
-                    1: "歩く瞑想を始めます。目はうっすらと開ける半眼にし、右足、左足、一歩ずつの足の感覚に静かに気づいていきましょう。",
-                    2: "歩く瞑想を始めます。目は半眼に保ち、足を動かす前の意図や、一歩ずつの細かな感覚に意識を向けます。",
-                    3: "歩く瞑想を始めます。目は半眼です。足の「上げる」「運ぶ」「下ろす」動きを丁寧に観察します。",
-                    4: "歩く瞑想を始めます。半眼のまま、足の動きに伴うすべての感覚の変化に気づきを維持します。",
-                    5: "歩く瞑想を始めます。半眼で深い集中とともに、一歩一歩の生滅を観察します。",
-                    6: "歩く瞑想を始めます。動いている足と、それを知っている心の結びつきをただ見つめます。"
+                    1: "歩く瞑想を始めます。目は半眼にし、足を上げ、下ろす時はかかとからではなく、足の裏全体を床にそっと着けるように下ろします。右足、左足、一歩ずつの感覚に静かに気づいていきましょう。",
+                    2: "歩く瞑想を始めます。目は半眼です。足を動かす前の意図に気づき、下ろす時は足の裏全体を均等に着けるようにして、一歩ずつの細かな感覚の変化に意識を向けます。",
+                    3: "歩く瞑想を始めます。足の「上げる」「運ぶ」「下ろす」動きを丁寧に観察します。下ろす時は、かかとからではなく足の裏全体を着地させ、同じように足の裏全体を地面から離すように上げていきます。",
+                    4: "歩く瞑想を始めます。半眼のまま、足の裏全体で地面を捉える感覚、そして離れる感覚に伴う、すべての生滅の変化に気づきを維持します。",
+                    5: "歩く瞑想を始めます。足の裏全体が着く、離れる、その一歩一歩の純粋な感覚のなかに、深い集中とともに気づきを維持します。",
+                    6: "歩く瞑想を始めます。足の裏全体がフラットに地面に触れる感覚と、それを知っている心の結びつきをただ静かに見つめます。"
                 },
                 sitting: {
                     1: "座る瞑想を始めます。目を静かに閉じ、お腹に優しく意識を向けます。息を吸うときの「膨らみ」、吐くときの「縮み」の感覚にただ気づいていきます。",
@@ -250,12 +250,12 @@ HTML
             steps: ["Step 1", "Step 2", "Step 3", "Step 4", "Step 5", "Step 6"],
             startGuides: {
                 walking: {
-                    1: "Begin walking meditation. Keep your eyes half-open. Gently bring awareness to the sensation of each step, right foot, left foot.",
-                    2: "Begin walking meditation. Keep your eyes half-open. Notice the intention before moving and the details of each step.",
-                    3: "Begin walking meditation. Keep your eyes half-open. Carefully observe the 'lifting', 'moving', and 'placing' of each foot.",
-                    4: "Begin walking meditation. Keep your eyes half-open. Maintain awareness of all changing sensations with each movement.",
-                    5: "Begin walking meditation. Observe the arising and passing away of each step with eyes half-open and deep concentration.",
-                    6: "Begin walking meditation. Simply witness the movement of the feet and the mind that knows it."
+                    1: "Begin walking meditation with eyes half-open. When lifting and placing your foot, do not land on your heel; place the sole of your foot entirely flat on the ground. Quietly notice the sensation of each step.",
+                    2: "Begin walking meditation with eyes half-open. Notice the intention before moving. Place the sole of your foot entirely flat, focusing on the subtle changing sensations.",
+                    3: "Begin walking meditation. Carefully observe 'lifting', 'moving', and 'placing'. Do not land on your heel; touch the ground with the entire sole of your foot, and lift it up in the same flat manner.",
+                    4: "Begin walking meditation with eyes half-open. Maintain awareness of the entire sole touching and leaving the ground, observing the nature of arising and passing away.",
+                    5: "Begin walking meditation. Maintain pure awareness with deep concentration as the entire sole of your foot connects with and leaves the ground step by step.",
+                    6: "Begin walking meditation. Simply witness the sensation of the sole touching the ground flatly, and the mind that knows it."
                 },
                 sitting: {
                     1: "Begin sitting meditation. Gently close your eyes and bring awareness to your abdomen. Simply observe the 'rising' when breathing in, and the 'falling' when breathing out.",
@@ -276,7 +276,7 @@ HTML
     let baseMinutes = 15; 
     let timeLeft = 15 * 60;
     let isRunning = false;
-    let currentMode = 'walking'; // 'walking', 'interval', 'sitting'
+    let currentMode = 'walking'; 
 
     function speakText(text) {
         window.speechSynthesis.cancel();
@@ -389,7 +389,6 @@ HTML
             updateGuideText();
 
             const totalSeconds = baseMinutes * 60;
-            // 初回スタート時のみ発話
             if (currentMode === 'walking' && timeLeft === totalSeconds) {
                 speakText(i18n[currentLang].startGuides.walking[currentStep]);
             }
@@ -398,7 +397,6 @@ HTML
                 timeLeft--;
                 formatTimer(timeLeft);
 
-                // 歩く瞑想・座る瞑想の最中だけ、途中のリマインドを流す
                 if (currentMode !== 'interval') {
                     if (timeLeft === Math.floor(totalSeconds * 0.66) || timeLeft === Math.floor(totalSeconds * 0.33)) {
                         speakText(i18n[currentLang].remindDistraction);
@@ -407,28 +405,21 @@ HTML
 
                 if (timeLeft <= 0) {
                     if (currentMode === 'walking') {
-                        // 1. 歩く瞑想が終了 ➔ チャイムを鳴らし、10秒の準備時間へ
                         playChime();
                         currentMode = 'interval';
-                        timeLeft = 10; // 10秒間のインターバル
+                        timeLeft = 10; 
                         formatTimer(timeLeft);
                         updateGuideText();
-                        
-                        // 「座る瞑想に移ります。目を閉じましょう」と案内
                         speakText(i18n[currentLang].changeToSitting);
 
                     } else if (currentMode === 'interval') {
-                        // 2. 10秒の準備時間が終了 ➔ 座る瞑想の本番スタート
                         currentMode = 'sitting';
-                        timeLeft = baseMinutes * 60; // 本来の座る瞑想時間をセット
+                        timeLeft = baseMinutes * 60; 
                         formatTimer(timeLeft);
                         updateGuideText();
-                        
-                        // 座る瞑想の段階別ガイダンスを喋る
                         speakText(i18n[currentLang].startGuides.sitting[currentStep]);
 
                     } else {
-                        // 3. 座る瞑想も終了 ➔ 完全終了
                         playChime();
                         clearInterval(timerId);
                         isRunning = false;
