@@ -11,6 +11,7 @@ HTML
             --secondary-color: #68b0ab;
             --bg-color: #faf9f6;
             --text-color: #2f3e46;
+            --accent-color: #d97706;
         }
         body {
             font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
@@ -84,14 +85,30 @@ HTML
             color: white;
             border-color: var(--primary-color);
         }
-        .timer-display {
-            font-size: 48px;
+        .current-mode-badge {
+            background: var(--secondary-color);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 16px;
             font-weight: bold;
-            margin: 20px 0;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .current-mode-badge.walking { background: #2563eb; }
+        .current-mode-badge.sitting { background: #059669; }
+        
+        .timer-display {
+            font-size: 54px;
+            font-weight: bold;
+            margin: 15px 0;
             color: var(--text-color);
         }
         .settings {
             margin-bottom: 25px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
         }
         .settings label {
             font-size: 14px;
@@ -104,6 +121,11 @@ HTML
             border-radius: 5px;
             border: 1px solid #ccc;
             text-align: center;
+        }
+        .total-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
         }
         .controls {
             margin-bottom: 20px;
@@ -124,18 +146,16 @@ HTML
             background: #3b6346;
             transform: translateY(-2px);
         }
-        .main-btn:active {
-            transform: translateY(0);
-        }
         .guide-text {
-            min-height: 60px;
-            font-size: 16px;
+            min-height: 80px;
+            font-size: 15px;
             line-height: 1.6;
             margin-top: 20px;
             padding: 15px;
-            background: #f9f9f9;
+            background: #f0f4f1;
             border-radius: 10px;
-            color: #555;
+            color: #333;
+            border-left: 5px solid var(--primary-color);
         }
     </style>
 </head>
@@ -160,17 +180,21 @@ HTML
     </div>
 
     <div class="settings">
-        <label id="label-time" for="time-input">タイマー設定 (分):</label>
+        <label id="label-time" for="time-input">各瞑想の時間 (分):</label>
         <input type="number" id="time-input" value="15" min="1" max="120" onchange="updateTimerDisplay()">
+        <div id="total-info" class="total-info">※歩く瞑想 → 座る瞑想の順に、合計30分行います。</div>
     </div>
 
+    <div>
+        <span id="mode-badge" class="current-mode-badge" style="display:none;">歩く瞑想</span>
+    </div>
     <div id="timer" class="timer-display">15:00</div>
 
     <div class="controls">
         <button id="start-btn" class="main-btn" onclick="toggleTimer()">瞑想開始</button>
     </div>
 
-    <div id="guide" class="guide-text">準備ができたら「瞑想開始」を押してください。</div>
+    <div id="guide" class="guide-text">準備ができたら「瞑想開始」を押してください。まずは歩く瞑想から始まります。</div>
 </div>
 
 <script>
@@ -178,58 +202,107 @@ HTML
         ja: {
             title: "瞑想ガイド",
             subtitle: "アジャン・トーン師の教えとともに",
-            labelTime: "タイマー設定 (分):",
+            labelTime: "各瞑想の時間 (分):",
+            totalInfo: "※歩く瞑想 → 座る瞑想の順に、連続で合計 {t} 分行います。",
             start: "瞑想開始",
             pause: "一時停止",
-            ready: "準備ができたら「瞑想開始」を押してください。",
-            finish: "瞑想が終了しました。サードゥ、サードゥ、サードゥ。",
+            ready: "準備ができたら「瞑想開始」を押してください。まずは歩く瞑想から始まります。",
+            finish: "すべての瞑想が終了しました。サードゥ、サードゥ、サードゥ。",
+            modeWalking: "経行（歩く瞑想）",
+            modeSitting: "坐禅（座る瞑想）",
+            changeToSitting: "時間になりました。続いて、座る瞑想に移ります。背筋を伸ばし、お腹の動きに意識を向けましょう。",
             steps: ["第1段階", "第2段階", "第3段階", "第4段階", "第5段階", "第6段階"],
-            guides: {
-                1: "第1段階：呼吸に意識を向けます。お腹の膨らみ、縮みに気づいていきましょう。",
-                2: "第2段階：手の動きへの気づきを高めます。一つ一つの動作を丁寧に追います。",
-                3: "第3段階：歩行瞑想を始めます。足の上げ下げ、運びに集中します。",
-                4: "第4段階：身体の感覚、心の動き、すべての生滅をただ観察します。",
-                5: "第5段階：深い集中とともに、純粋な気づきを維持します。",
-                6: "第6段階：内なる静寂と智慧の広がりに身をゆだねます。"
-            }
+            // 瞑想開始時の初期ガイダンス
+            startGuides: {
+                walking: {
+                    1: "歩く瞑想を始めます。右足、左足、一歩ずつの足の感覚に静かに気づいていきましょう。",
+                    2: "歩く瞑想を始めます。足を動かす前の意図や、一歩ずつの細かな感覚に意識を向けます。",
+                    3: "歩く瞑想を始めます。足の「上げる」「運ぶ」「下ろす」動きを丁寧に観察します。",
+                    4: "歩く瞑想を始めます。足の動きに伴うすべての感覚の変化に気づきを維持します。",
+                    5: "歩く瞑想を始めます。深い集中とともに、一歩一歩の生滅を観察します。",
+                    6: "歩く瞑想を始めます。動いている足と、それを知っている心の結びつきをただ見つめます。"
+                },
+                sitting: {
+                    1: "座る瞑想を始めます。お腹に優しく意識を向け、息を吸うときの「膨らみ」、吐くときの「縮み」の感覚にただ気づいていきます。",
+                    2: "座る瞑想を始めます。お腹の「膨らみ」「縮み」の始まりから終わりまでを、より丁寧に見届けます。",
+                    3: "座る瞑想を始めます。お腹の動きの微細な変化と、その合間にある静けさに気づきます。",
+                    4: "座る瞑想を始めます。お腹の動きを中心に据えつつ、心身に現れるすべての現象をただ観察します。",
+                    5: "座る瞑想を始めます。深いサマーディとともに、純粋な気づきを途切れなく維持します。",
+                    6: "座る瞑想を始めます。内なる静寂の中に座り、智慧の広がりに身をゆだねます。"
+                }
+            },
+            // 途中で流れるアドバイス（案内）
+            remindDistraction: "瞑想中に、物音に気を取られたり、雑念や考え事が湧いてきた時は、焦る必要はありません。まずは『音、音』『妄想、妄想』とその現象を心の中で静かに観察してみましょう。引きずられなくなったら、またそっと、足の動きやお腹の呼吸の感覚へと戻ります。"
         },
         en: {
             title: "Meditation Guide",
             subtitle: "With the teachings of Ajahn Tong",
-            labelTime: "Set Timer (min):",
+            labelTime: "Duration per session (min):",
+            totalInfo: "*Walking then Sitting session, total {t} mins consecutively.",
             start: "Start Meditation",
             pause: "Pause",
-            ready: "Press 'Start' when you are ready.",
-            finish: "Meditation finished. Sadhu, Sadhu, Sadhu.",
+            ready: "Press 'Start' when ready. We will begin with walking meditation.",
+            finish: "All meditation sessions are finished. Sadhu, Sadhu, Sadhu.",
+            modeWalking: "Walking Meditation",
+            modeSitting: "Sitting Meditation",
+            changeToSitting: "Time is up. Now, please transition to sitting meditation. Straighten your back, and focus on the movement of your abdomen.",
             steps: ["Step 1", "Step 2", "Step 3", "Step 4", "Step 5", "Step 6"],
-            guides: {
-                1: "Step 1: Focus on the breath. Observe the rising and falling of the abdomen.",
-                2: "Step 2: Increase awareness of hand movements. Notice each motion gently.",
-                3: "Step 3: Begin walking meditation. Focus on the lifting and placing of your feet.",
-                4: "Step 4: Observe bodily sensations and mental states as they arise and pass away.",
-                5: "Step 5: Maintain pure awareness with deep concentration.",
-                6: "Step 6: Rest in inner silence and the expansion of wisdom."
-            }
+            startGuides: {
+                walking: {
+                    1: "Begin walking meditation. Gently bring awareness to the sensation of each step, right foot, left foot.",
+                    2: "Begin walking meditation. Notice the intention before moving and the details of each step.",
+                    3: "Begin walking meditation. Carefully observe the 'lifting', 'moving', and 'placing' of each foot.",
+                    4: "Begin walking meditation. Maintain awareness of all changing sensations with each movement.",
+                    5: "Begin walking meditation. Observe the arising and passing away of each step with deep concentration.",
+                    6: "Begin walking meditation. Simply witness the movement of the feet and the mind that knows it."
+                },
+                sitting: {
+                    1: "Begin sitting meditation. Gently bring awareness to your abdomen. Simply observe the 'rising' when breathing in, and the 'falling' when breathing out.",
+                    2: "Begin sitting meditation. Follow the 'rising' and 'falling' of the abdomen closely from beginning to end.",
+                    3: "Begin sitting meditation. Notice the subtle changes in the movement of the abdomen and the stillness in between.",
+                    4: "Begin sitting meditation. Keep focus on the abdomen, while simply observing any mental or physical phenomena that arise.",
+                    5: "Begin sitting meditation. Maintain uninterrupted pure awareness with deep Samadhi.",
+                    6: "Begin sitting meditation. Rest in inner silence, surrendering to the expansion of wisdom."
+                }
+            },
+            remindDistraction: "During meditation, if you are distracted by sounds or thoughts arise, there is no need to worry. First, acknowledge them by gently noting 'sound, sound' or 'thinking, thinking' in your mind. Once they fade away, softly return your awareness back to the movement of your feet or the breath at your abdomen."
         }
     };
 
     let currentLang = 'ja';
     let currentStep = 1;
     let timerId = null;
+    let baseMinutes = 15; // ユーザーが設定した各瞑想の分数
     let timeLeft = 15 * 60;
     let isRunning = false;
+    let currentMode = 'walking'; // 'walking' または 'sitting'
 
-    // 【新機能】音声を再生する関数
+    // 合成音声
     function speakText(text) {
-        // もし前に喋っている途中なら止める
         window.speechSynthesis.cancel();
-        
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = currentLang === 'ja' ? 'ja-JP' : 'en-US';
-        utterance.rate = 0.85; // 瞑想用に少しゆっくり喋る設定
-        utterance.pitch = 1.0;
-        
+        utterance.rate = 0.82; // 初心者向けにさらに少しゆったり
         window.speechSynthesis.speak(utterance);
+    }
+
+    // 電子チャイム音（簡易ビープ）
+    function playChime() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5 のきれいな音
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 1.5);
+        } catch(e) {
+            console.log("Audio node error", e);
+        }
     }
 
     function changeLanguage(lang) {
@@ -248,38 +321,47 @@ HTML
             btn.innerText = i18n[lang].steps[index];
         });
 
-        updateGuideText();
+        updateTimerDisplay();
     }
 
     function selectStep(step) {
+        if (isRunning) return; // 瞑想中は段階変更不可にして集中を守る
         currentStep = step;
         const stepButtons = document.querySelectorAll('.step-btn');
         stepButtons.forEach((btn, index) => {
             btn.classList.toggle('active', (index + 1) === step);
         });
-
         updateGuideText();
-        
-        // 瞑想中に段階を切り替えたら新しいガイドを喋る
-        if (isRunning) {
-            speakText(i18n[currentLang].guides[currentStep]);
-        }
     }
 
     function updateGuideText() {
         const guideEl = document.getElementById('guide');
+        const badgeEl = document.getElementById('mode-badge');
+        
         if (isRunning) {
-            guideEl.innerText = i18n[currentLang].guides[currentStep];
+            badgeEl.style.display = 'inline-block';
+            if (currentMode === 'walking') {
+                badgeEl.innerText = i18n[currentLang].modeWalking;
+                badgeEl.className = "current-mode-badge walking";
+                guideEl.innerText = i18n[currentLang].startGuides.walking[currentStep];
+            } else {
+                badgeEl.innerText = i18n[currentLang].modeSitting;
+                badgeEl.className = "current-mode-badge sitting";
+                guideEl.innerText = i18n[currentLang].startGuides.sitting[currentStep];
+            }
         } else {
+            badgeEl.style.display = 'none';
             guideEl.innerText = i18n[currentLang].ready;
         }
     }
 
     function updateTimerDisplay() {
-        if (isRunning) return;
-        const mins = parseInt(document.getElementById('time-input').value) || 15;
-        timeLeft = mins * 60;
-        formatTimer(timeLeft);
+        baseMinutes = parseInt(document.getElementById('time-input').value) || 15;
+        document.getElementById('total-info').innerText = i18n[currentLang].totalInfo.replace('{t}', baseMinutes * 2);
+        if (!isRunning) {
+            timeLeft = baseMinutes * 60;
+            formatTimer(timeLeft);
+        }
     }
 
     function formatTimer(seconds) {
@@ -297,34 +379,59 @@ HTML
             clearInterval(timerId);
             isRunning = false;
             startBtn.innerText = i18n[currentLang].start;
-            window.speechSynthesis.cancel(); // 音声も止める
+            window.speechSynthesis.cancel();
+            updateGuideText();
         } else {
-            // 開始
-            if (timeLeft <= 0) updateTimerDisplay();
+            // 開始・再開
             isRunning = true;
             startBtn.innerText = i18n[currentLang].pause;
             updateGuideText();
 
-            // 開始した瞬間に、現在の段階のガイドを喋る
-            speakText(i18n[currentLang].guides[currentStep]);
+            // 最初から開始する場合のみガイダンスを喋る
+            const totalSeconds = baseMinutes * 60;
+            if (timeLeft === totalSeconds) {
+                speakText(i18n[currentLang].startGuides[currentMode][currentStep]);
+            }
 
             timerId = setInterval(() => {
                 timeLeft--;
                 formatTimer(timeLeft);
 
+                // 【新機能】ちょうど中間（残り時間の半分や、一定分数）で雑念へのアドバイスを喋る指示
+                // 例：15分タイマーの場合、開始から5分後（残り10分）にリマインドを入れる
+                if (timeLeft === Math.floor(totalSeconds * 0.66) || timeLeft === Math.floor(totalSeconds * 0.33)) {
+                    speakText(i18n[currentLang].remindDistraction);
+                }
+
                 if (timeLeft <= 0) {
-                    clearInterval(timerId);
-                    isRunning = false;
-                    startBtn.innerText = i18n[currentLang].start;
-                    document.getElementById('guide').innerText = i18n[currentLang].finish;
-                    
-                    // 終了した時に「サードゥ…」と喋る
-                    speakText(i18n[currentLang].finish);
+                    playChime(); // チャイムを鳴らす
+
+                    if (currentMode === 'walking') {
+                        // 歩く瞑想終了 -> 座る瞑想へ自動切り替え
+                        currentMode = 'sitting';
+                        timeLeft = baseMinutes * 60; // 時間を再セット
+                        formatTimer(timeLeft);
+                        updateGuideText();
+                        
+                        // 切り替え案内を喋る
+                        speakText(i18n[currentLang].changeToSitting);
+                    } else {
+                        // すべて終了
+                        clearInterval(timerId);
+                        isRunning = false;
+                        currentMode = 'walking'; // 次回のために戻す
+                        startBtn.innerText = i18n[currentLang].start;
+                        document.getElementById('guide').innerText = i18n[currentLang].finish;
+                        
+                        speakText(i18n[currentLang].finish);
+                        alert(i18n[currentLang].finish);
+                    }
                 }
             }, 1000);
         }
     }
 
+    // 初期起動
     updateTimerDisplay();
 </script>
 
