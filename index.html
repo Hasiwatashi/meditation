@@ -1,253 +1,329 @@
+HTML
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chom Thong Vipassana Guide</title>
-<style>
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f0f4f7; color: #2c3e50; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-.container { max-width: 500px; width: 100%; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); box-sizing: border-box; }
-.lang-switch { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 10px; }
-.lang-btn { background: none; border: 1px solid #ccc; padding: 3px 8px; border-radius: 5px; cursor: pointer; font-size: 12px; }
-.lang-btn.active { background: #7f8c8d; color: white; border-color: #7f8c8d; }
-h1 { font-size: 24px; text-align: center; margin-bottom: 5px; color: #2c3e50; }
-.subtitle { text-align: center; font-size: 13px; color: #7f8c8d; margin-bottom: 25px; }
-label { font-size: 14px; color: #7f8c8d; display: block; margin-bottom: 8px; }
-.stage-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-.stage-btn { padding: 12px; background: #ecf0f1; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.2s; }
-.stage-btn.active { background: #3498db; color: white; }
-.input-group { margin-bottom: 25px; text-align: center; }
-input { font-size: 22px; width: 80px; text-align: center; padding: 5px; border: none; border-bottom: 2px solid #3498db; outline: none; }
-.main-btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; }
-.start { background: #2ecc71; }
-.stop { background: #e74c3c; }
-.status-area { text-align: center; margin-top: 10px; }
-.mode-text { font-size: 20px; color: #e74c3c; font-weight: bold; margin-bottom: 5px; }
-.timer-text { font-size: 48px; font-weight: 300; margin: 10px 0; font-variant-numeric: tabular-nums; }
-.info-box { width: 100%; max-width: 500px; margin-top: 20px; padding: 15px; background: #d1eafc; border-radius: 12px; box-sizing: border-box; font-size: 14px; }
-.info-title { font-weight: bold; color: #2980b9; margin-bottom: 5px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>瞑想ガイドアプリ - Meditation Guide</title>
+    <style>
+        :root {
+            --primary-color: #4a7c59;
+            --secondary-color: #68b0ab;
+            --bg-color: #faf9f6;
+            --text-color: #2f3e46;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        .lang-switch {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .lang-btn {
+            background: #e0e0e0;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .lang-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .step-btn {
+            background: #f0f4f1;
+            border: 2px solid #e0eae2;
+            padding: 12px 5px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .step-btn:hover {
+            background: #e2ede5;
+        }
+        .step-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .timer-display {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: var(--text-color);
+        }
+        .settings {
+            margin-bottom: 25px;
+        }
+        .settings label {
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        .settings input {
+            width: 60px;
+            padding: 5px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        .main-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(74,124,89,0.3);
+            transition: all 0.3s;
+            width: 80%;
+        }
+        .main-btn:hover {
+            background: #3b6346;
+            transform: translateY(-2px);
+        }
+        .main-btn:active {
+            transform: translateY(0);
+        }
+        .guide-text {
+            min-height: 60px;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            color: #555;
+        }
+    </style>
 </head>
 <body>
 
 <div class="container">
-<div class="lang-switch">
-<button class="lang-btn active" id="btn-ja" onclick="setLanguage('ja')">日本語</button>
-<button class="lang-btn" id="btn-en" onclick="setLanguage('en')">English</button>
-</div>
+    <div class="lang-switch">
+        <button id="btn-ja" class="lang-btn active" onclick="changeLanguage('ja')">日本語</button>
+        <button id="btn-en" class="lang-btn" onclick="changeLanguage('en')">English</button>
+    </div>
 
-<h1>Chom Thong Vipassana</h1>
-<div class="subtitle">Wat Phra That Si Chom Thong Style</div>
+    <h1 id="app-title">瞑想ガイド</h1>
+    <p id="app-subtitle" class="subtitle">アジャン・トーン師の教えとともに</p>
 
-<label id="label-stage">段階選択 (Stage):</label>
-<div class="stage-grid" id="stageGrid">
-<button class="stage-btn active" onclick="changeStage(1)">1</button>
-<button class="stage-btn" onclick="changeStage(2)">2</button>
-<button class="stage-btn" onclick="changeStage(3)">3</button>
-<button class="stage-btn" onclick="changeStage(4)">4</button>
-<button class="stage-btn" onclick="changeStage(5)">5</button>
-<button class="stage-btn" onclick="changeStage(6)">6</button>
-</div>
+    <div class="steps-container">
+        <button class="step-btn active" onclick="selectStep(1)">第1段階</button>
+        <button class="step-btn" onclick="selectStep(2)">第2段階</button>
+        <button class="step-btn" onclick="selectStep(3)">第3段階</button>
+        <button class="step-btn" onclick="selectStep(4)">第4段階</button>
+        <button class="step-btn" onclick="selectStep(5)">第5段階</button>
+        <button class="step-btn" onclick="selectStep(6)">第6段階</button>
+    </div>
 
-<div id="setupArea">
-<div class="input-group">
-<label id="label-time">各セッションの時間 (分):</label>
-<input type="number" id="durationInput" value="20" min="1">
-</div>
-<button class="main-btn start" id="btn-start" onclick="startMeditation()">瞑想開始</button>
-</div>
+    <div class="settings">
+        <label id="label-time" for="time-input">タイマー設定 (分):</label>
+        <input type="number" id="time-input" value="15" min="1" max="120" onchange="updateTimerDisplay()">
+    </div>
 
-<div id="statusArea" style="display: none;" class="status-area">
-<div class="mode-text" id="modeText">歩行中...</div>
-<div class="timer-text" id="timerText">20:00</div>
-<button class="main-btn stop" id="btn-stop" onclick="stopMeditation()">中断する</button>
-</div>
-</div>
+    <div id="timer" class="timer-display">15:00</div>
 
-<div class="info-box">
-<div class="info-title" id="label-current">現在のラベリング:</div>
-<div id="labelGuide"></div>
+    <div class="controls">
+        <button id="start-btn" class="main-btn" onclick="toggleTimer()">瞑想開始</button>
+    </div>
+
+    <div id="guide" class="guide-text">準備ができたら「瞑想開始」を押してください。</div>
 </div>
 
 <script>
-// 日英の言語テキスト定義
-const TRANSLATIONS = {
-ja: {
-stage: "段階選択 (Stage):", time: "各セッションの時間 (分):", start: "瞑想開始", stop: "中断する", current: "現在のラベリング:",
-walkingText: "歩行", sittingText: "坐位", errorTime: "時間を正しく入力してください",
-startMsg: "の修行を開始します。歩行瞑想から始めます。",
-switchMsg: "歩行瞑想を終了しました。次は坐位瞑想です。腰を下ろしてください。",
-endMsg: "セッションが終了しました。サードゥ、サードゥ、サードゥ。",
-walkingMode: "歩行瞑想中...", sittingMode: "坐位瞑想中..."
-},
-en: {
-stage: "Select Stage:", time: "Duration per session (mins):", start: "Start Meditation", stop: "Stop / Interrupt", current: "Current Labeling:",
-walkingText: "Walking", sittingText: "Sitting", errorTime: "Please enter a valid time.",
-startMsg: " meditation session started. Let's begin with walking meditation.",
-switchMsg: "Walking meditation finished. Next is sitting meditation. Please take your seat.",
-endMsg: "The session has ended. Sadhu, Sadhu, Sadhu.",
-walkingMode: "Walking Meditation...", sittingMode: "Sitting Meditation..."
-}
-};
+    // 言語データ
+    const i18n = {
+        ja: {
+            title: "瞑想ガイド",
+            subtitle: "アジャン・トーン師の教えとともに",
+            labelTime: "タイマー設定 (分):",
+            start: "瞑想開始",
+            pause: "一時停止",
+            ready: "準備ができたら「瞑想開始」を押してください。",
+            finish: "瞑想が終了しました。サードゥ、サードゥ、サードゥ。",
+            steps: ["第1段階", "第2段階", "第3段階", "第4段階", "第5段階", "第6段階"],
+            guides: {
+                1: "第1段階：呼吸に意識を向けます。「膨らみ」「縮み」に気づいていきましょう。",
+                2: "第2段階：手の動きへの気づきを高めます。一つ一つの動作を丁寧に追います。",
+                3: "第3段階：歩行瞑想（経行）を始めます。足の上げ下げに集中します。",
+                4: "第4段階：身体の感覚、心の動き、すべての生滅をただ観察します。",
+                5: "第5段階：深い集中（サマーディ）とともに、純粋な気づきを維持します。",
+                6: "第6段階：内なる静寂と智慧（パンニャー）の広がりに身をゆだねます。"
+            }
+        },
+        en: {
+            title: "Meditation Guide",
+            subtitle: "With the teachings of Ajahn Tong",
+            labelTime: "Set Timer (min):",
+            start: "Start Meditation",
+            pause: "Pause",
+            ready: "Press 'Start' when you are ready.",
+            finish: "Meditation finished. Sadhu, Sadhu, Sadhu.",
+            steps: ["Step 1", "Step 2", "Step 3", "Step 4", "Step 5", "Step 6"],
+            guides: {
+                1: "Step 1: Focus on the breath. Observe the rising and falling of the abdomen.",
+                2: "Step 2: Increase awareness of hand movements. Notice each motion gently.",
+                3: "Step 3: Begin walking meditation. Focus on the lifting and placing of your feet.",
+                4: "Step 4: Observe bodily sensations and mental states as they arise and pass away.",
+                5: "Step 5: Maintain pure awareness with deep concentration (Samadhi).",
+                6: "Step 6: Rest in inner silence and the expansion of wisdom (Pannya)."
+            }
+        }
+    };
 
-const STAGES = {
-1: {
-name: { ja: "第1段階", en: "Stage 1" },
-walking: { ja: ["右足", "左足"], en: ["Right foot", "Left foot"] },
-sitting: { ja: ["膨らみ", "縮み"], en: ["Rising", "Falling"] }
-},
-2: {
-name: { ja: "第2段階", en: "Stage 2" },
-walking: { ja: ["上げる", "置く"], en: ["Lifting", "Placing"] },
-sitting: { ja: ["膨らみ", "縮み"], en: ["Rising", "Falling"] }
-},
-3: {
-name: { ja: "第3段階", en: "Stage 3" },
-walking: { ja: ["上げる", "運ぶ", "置く"], en: ["Lifting", "Moving", "Placing"] },
-sitting: { ja: ["膨らみ", "縮み", "座っている", "触れている"], en: ["Rising", "Falling", "Sitting", "Touching"] }
-},
-4: {
-name: { ja: "第4段階", en: "Stage 4" },
-walking: { ja: ["踵を上げる", "上げる", "運ぶ", "置く"], en: ["Raising heel", "Lifting", "Moving", "Placing"] },
-sitting: { ja: ["膨らみ", "縮み", "座っている", "触れている"], en: ["Rising", "Falling", "Sitting", "Touching"] }
-},
-5: {
-name: { ja: "第5段階", en: "Stage 5" },
-walking: { ja: ["踵を上げる", "上げる", "運ぶ", "下ろす", "置く"], en: ["Raising heel", "Lifting", "Moving", "Lowering", "Placing"] },
-sitting: { ja: ["膨らみ", "縮み", "座っている", "触れている"], en: ["Rising", "Falling", "Sitting", "Touching"] }
-},
-6: {
-name: { ja: "第6段階", en: "Stage 6" },
-walking: { ja: ["踵を上げる", "上げる", "運ぶ", "下ろす", "触れる", "押す"], en: ["Raising heel", "Lifting", "Moving", "Lowering", "Touching", "Pressing"] },
-sitting: { ja: ["膨らみ", "縮み", "座っている", "触れている"], en: ["Rising", "Falling", "Sitting", "Touching"] }
-}
-};
+    let currentLang = 'ja';
+    let currentStep = 1;
+    let timerId = null;
+    let timeLeft = 15 * 60; // 秒換算
+    let isRunning = false;
 
-let lang = 'ja';
-let currentStage = 1;
-let isRunning = false;
-let mode = '待機';
-let timeLeft = 0;
-let timerInterval = null;
-let speechInterval = null;
+    // 言語切り替え
+    function changeLanguage(lang) {
+        currentLang = lang;
+        
+        // ボタンの見た目更新
+        document.getElementById('btn-ja').classList.toggle('active', lang === 'ja');
+        document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+        
+        // テキストの更新
+        document.getElementById('app-title').innerText = i18n[lang].title;
+        document.getElementById('app-subtitle').innerText = i18n[lang].subtitle;
+        document.getElementById('label-time').innerText = i18n[lang].labelTime;
+        
+        const startBtn = document.getElementById('start-btn');
+        if (isRunning) {
+            startBtn.innerText = i18n[lang].pause;
+        } else {
+            startBtn.innerText = i18n[lang].start;
+        }
 
-function setLanguage(l) {
-if (isRunning) return;
-lang = l;
-document.getElementById('btn-ja').classList.toggle('active', lang === 'ja');
-document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+        // 段階ボタンのテキスト更新
+        const stepButtons = document.querySelectorAll('.step-btn');
+        stepButtons.forEach((btn, index) => {
+            btn.innerText = i18n[lang].steps[index];
+        });
 
-// UIテキストの更新
-const t = TRANSLATIONS[lang];
-document.getElementById('label-stage').innerText = t.stage;
-document.getElementById('label-time').innerText = t.time;
-document.getElementById('btn-start').innerText = t.start;
-document.getElementById('btn-stop').innerText = t.stop;
-document.getElementById('label-current').innerText = t.current;
+        // ガイドテキストの更新
+        updateGuideText();
+    }
 
-updateGuide();
-}
+    // 段階の選択
+    function selectStep(step) {
+        currentStep = step;
+        
+        // ボタンの見た目更新
+        const stepButtons = document.querySelectorAll('.step-btn');
+        stepButtons.forEach((btn, index) => {
+            btn.classList.toggle('active', (index + 1) === step);
+        });
 
-function changeStage(stage) {
-if (isRunning) return;
-currentStage = stage;
-document.querySelectorAll('.stage-btn').forEach((btn, idx) => {
-btn.classList.toggle('active', idx === stage - 1);
-});
-updateGuide();
-}
+        updateGuideText();
+    }
 
-function updateGuide() {
-const g = STAGES[currentStage];
-const t = TRANSLATIONS[lang];
-document.getElementById('labelGuide').innerHTML = 【${t.walkingText}】 ${g.walking[lang].join(' → ')}&lt;br&gt;【${t.sittingText}】 ${g.sitting[lang].join(' → ')};
-}
+    // ガイドテキストの表示更新
+    function updateGuideText() {
+        if (isRunning) {
+            document.getElementById('guide').innerText = i18n[currentLang].guides[currentStep];
+        } else {
+            document.getElementById('guide').innerText = i18n[currentLang].ready;
+        }
+    }
 
-function speak(text, callback) {
-window.speechSynthesis.cancel();
-const uttr = new SpeechSynthesisUtterance(text);
-uttr.lang = lang === 'ja' ? 'ja-JP' : 'en-US';
-uttr.rate = lang === 'ja' ? 0.8 : 0.75; // 英語は少しゆったりめ
-if (callback) uttr.onend = callback;
-window.speechSynthesis.speak(uttr);
-}
+    // タイマー時間の表示更新（入力欄が変わったとき）
+    function updateTimerDisplay() {
+        if (isRunning) return;
+        const mins = parseInt(document.getElementById('time-input').value) || 15;
+        timeLeft = mins * 60;
+        formatTimer(timeLeft);
+    }
 
-function startSpeechLoop(labels) {
-clearInterval(speechInterval);
-let index = 0;
-speak(labels[index]);
-index = (index + 1) % labels.length;
+    // タイマーの書式設定 (00:00)
+    function formatTimer(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        document.getElementById('timer').innerText = 
+            `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
 
-speechInterval = setInterval(() => {
-speak(labels[index]);
-index = (index + 1) % labels.length;
-}, 5000); // 5秒間隔
-}
+    // タイマーの開始・停止
+    function toggleTimer() {
+        const startBtn = document.getElementById('start-btn');
+        
+        if (isRunning) {
+            // 一時停止
+            clearInterval(timerId);
+            isRunning = false;
+            startBtn.innerText = i18n[currentLang].start;
+        } else {
+            // 開始
+            if (timeLeft <= 0) updateTimerDisplay();
+            isRunning = true;
+            startBtn.innerText = i18n[currentLang].pause;
+            updateGuideText();
 
-function startMeditation() {
-const mins = parseInt(document.getElementById('durationInput').value);
-if (isNaN(mins) || mins <= 0) return alert(TRANSLATIONS[lang].errorTime);
+            timerId = setInterval(() => {
+                timeLeft--;
+                formatTimer(timeLeft);
 
-isRunning = true;
-mode = '歩行';
-timeLeft = mins * 60;
+                if (timeLeft <= 0) {
+                    clearInterval(timerId);
+                    isRunning = false;
+                    startBtn.innerText = i18n[currentLang].start;
+                    document.getElementById('guide').innerText = i18n[currentLang].finish;
+                    
+                    // ブラウザの標準アラート音（または音声再生の代わりに簡易通知）
+                    alert(i18n[currentLang].finish);
+                }
+            }, 1000);
+        }
+    }
 
-document.getElementById('setupArea').style.display = 'none';
-document.getElementById('statusArea').style.display = 'block';
-document.getElementById('modeText').innerText = TRANSLATIONS[lang].walkingMode;
-updateTimerDisplay();
-
-const welcomeMsg = lang === 'ja'
-? ${STAGES[currentStage].name[lang]}${TRANSLATIONS[lang].startMsg}
-: ${STAGES[currentStage].name[lang]} ${TRANSLATIONS[lang].startMsg};
-
-speak(welcomeMsg, () => {
-if(isRunning && mode === '歩行') startSpeechLoop(STAGES[currentStage].walking[lang]);
-});
-
-timerInterval = setInterval(() => {
-timeLeft--;
-updateTimerDisplay();
-if (timeLeft <= 0) nextPhase();
-}, 1000);
-}
-
-function nextPhase() {
-clearInterval(speechInterval);
-if (mode === '歩行') {
-mode = '坐位';
-const mins = parseInt(document.getElementById('durationInput').value);
-timeLeft = mins * 60;
-document.getElementById('modeText').innerText = TRANSLATIONS[lang].sittingMode;
-updateTimerDisplay();
-
-speak(TRANSLATIONS[lang].switchMsg);
-setTimeout(() => {
-if (isRunning && mode === '坐位') startSpeechLoop(STAGES[currentStage].sitting[lang]);
-}, 12000); // 英語のアナウンス長さを考慮して12秒の猶予
-} else {
-stopMeditation();
-speak(TRANSLATIONS[lang].endMsg);
-}
-}
-
-function stopMeditation() {
-isRunning = false;
-clearInterval(timerInterval);
-clearInterval(speechInterval);
-window.speechSynthesis.cancel();
-document.getElementById('setupArea').style.display = 'block';
-document.getElementById('statusArea').style.display = 'none';
-}
-
-function updateTimerDisplay() {
-const m = Math.floor(timeLeft / 60);
-const s = timeLeft % 60;
-document.getElementById('timerText').innerText = ${m}:${s.toString().padStart(2, '0')};
-}
-
-// 初期表示の更新
-updateGuide();
+    // 初期化
+    updateTimerDisplay();
 </script>
+
 </body>
 </html>
